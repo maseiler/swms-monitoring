@@ -1,0 +1,12 @@
+# Override default values here
+##
+
+webserver:
+  defaultUser:
+    enabled: true
+    role: Admin
+    username: pjds
+    email: admin@example.com
+    firstName: admin
+    lastName: user
+    password: pjds

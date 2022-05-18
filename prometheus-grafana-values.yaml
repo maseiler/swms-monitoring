@@ -1,0 +1,6 @@
+# Override default values here
+##
+
+grafana:
+  adminUser: pjds
+  adminPassword: pjds
