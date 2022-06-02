@@ -17,8 +17,10 @@ gcloud container clusters get-credentials cluster-1 --zone europe-west3-b --proj
 # deploy Airflow
 printf "\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n\t Deploying Airflow...\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
 helm install airflow apache-airflow/airflow \
-  -n airflow --create-namespace \
-  -f airflow-values.yaml
+  --namespace airflow --create-namespace \
+  -f airflow-values.yaml \
+  --set-string "env[0].name=AIRFLOW__CORE__LOAD_EXAMPLES" \
+  --set-string "env[0].value=True"
 
 nohup kubectl port-forward service/airflow-webserver 8080:8080 -n airflow &>/dev/null &
 printf "\nAirflow UI accessible via http://localhost:8080\n  User: pjds\n  Pass: pjds\n"
