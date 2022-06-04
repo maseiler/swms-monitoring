@@ -10,3 +10,6 @@ webserver:
     firstName: admin
     lastName: user
     password: pjds
+
+workers:
+  replicas: 3
