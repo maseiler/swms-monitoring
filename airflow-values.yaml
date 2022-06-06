@@ -11,6 +11,9 @@ webserver:
     lastName: user
     password: pjds
 
+workers:
+  replicas: 3
+
 statsd:
   extraMappings:
     # Airflow StatsD metrics mappings (https://airflow.apache.org/docs/apache-airflow/stable/logging-monitoring/metrics.html)
