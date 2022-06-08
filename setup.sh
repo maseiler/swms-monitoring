@@ -33,3 +33,5 @@ helm install prometheus-grafana prometheus-community/kube-prometheus-stack \
 
 nohup kubectl port-forward service/prometheus-grafana 3000:80 -n prometheus-grafana &>/dev/null &
 printf "\nGrafana dashboard accessible via http://localhost:3000\n  User: pjds\n  Pass: pjds\n"
+sleep 3s
+kubectl cp ./dashboards $(kubectl get pod -l app.kubernetes.io/name=grafana -n prometheus-grafana -o jsonpath="{.items[0].metadata.name}"):/tmp -n prometheus-grafana

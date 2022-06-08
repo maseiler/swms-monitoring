@@ -4,3 +4,11 @@
 grafana:
   adminUser: pjds
   adminPassword: pjds
+
+prometheus:
+  prometheusSpec:
+    additionalScrapeConfigs:
+      - job_name: 'airflow'
+        scrape_interval: 15s
+        static_configs:
+          - targets: ['airflow-statsd.airflow.svc.cluster.local:9102']
