@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#/bin/bash
 ###
 # Note: all port forwarding happens in the background. You have to kill the process to stop it.
 ###
@@ -20,7 +20,8 @@ helm install airflow apache-airflow/airflow \
   --namespace airflow --create-namespace \
   -f airflow-values.yaml \
   --set-string "env[0].name=AIRFLOW__CORE__LOAD_EXAMPLES" \
-  --set-string "env[0].value=True"
+  --set-string "env[0].value=True" \
+  --set executor=KubernetesExecutor 
 
 nohup kubectl port-forward service/airflow-webserver 8080:8080 -n airflow &>/dev/null &
 printf "\nAirflow UI accessible via http://localhost:8080\n  User: pjds\n  Pass: pjds\n"
