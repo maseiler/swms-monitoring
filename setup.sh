@@ -19,9 +19,12 @@ printf "\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒�
 helm install airflow apache-airflow/airflow \
   --namespace airflow --create-namespace \
   -f airflow-values.yaml \
-  --set-string "env[0].name=AIRFLOW__CORE__LOAD_EXAMPLES" \
-  --set-string "env[0].value=True" \
-  --set executor=KubernetesExecutor 
+  --set executor=KubernetesExecutor
+
+#  --set-string "env[0].name=AIRFLOW__CORE__LOAD_EXAMPLES" \
+#  --set-string "env[1].name=AIRFLOW__API__AUTH_BACKENDS"\
+#  --set-string "env[0].value=True" \
+#  --set-string "env[1].value=airflow.api.auth.backend.basic_auth"\ 
 
 nohup kubectl port-forward service/airflow-webserver 8080:8080 -n airflow &>/dev/null &
 printf "\nAirflow UI accessible via http://localhost:8080\n  User: pjds\n  Pass: pjds\n"
