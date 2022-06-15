@@ -12,3 +12,7 @@ prometheus:
         scrape_interval: 15s
         static_configs:
           - targets: ['airflow-statsd.airflow.svc.cluster.local:9102']
+      - job_name: 'ebpf'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['ebpf-exporter-service.ebpf.svc.cluster.local:9435']
