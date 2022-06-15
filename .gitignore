@@ -1,1 +1,6 @@
 .vscode
+
+report/*
+!report/PJDS_Monitoring_Report.tex
+!report/PJDS_Monitoring_Report.pdf
+!report/bib.bib

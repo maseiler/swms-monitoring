@@ -1,0 +1,126 @@
+\documentclass[a4paper, 11pt]{article}
+
+\usepackage{geometry}
+\geometry{a4paper,left=30mm,right=30mm, top=35mm, bottom=30mm}
+
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{stmaryrd}
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{semantic}
+\usepackage{lastpage} % Seitenzahlen
+
+\newcommand{\AND}{{\mbox{ }\wedge\mbox{ }}}
+\newcommand{\OR}{{\mbox{ }\vee\mbox{ }}}
+\newcommand{\IMP}{{\mbox{ }\rightarrow\mbox{ }}}
+\newcommand{\AEQ}{{\mbox{ }\leftrightarrow\mbox{ }}}
+
+\pagestyle{fancy}
+\usepackage{amsmath}
+\usepackage{tabularx} %schöne tabellen
+\parindent0pt %einrücken verhindern
+\renewcommand{\familydefault}{\sfdefault} % use sans fonts
+\setlength{\headheight}{14pt} %warning verhindern
+
+
+\usepackage{polynom}
+\cfoot{\thepage  \ / \pageref{LastPage}}
+
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+% checkboxes
+\usepackage{enumitem}
+\newlist{todolist}{itemize}{2}
+\setlist[todolist]{label=$\square$}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\newcommand{\done}{\rlap{$\square$}{\raisebox{2pt}{\large\hspace{1pt}\cmark}}%
+	\hspace{-2.5pt}}
+\newcommand{\wontfix}{\rlap{$\square$}{\large\hspace{1pt}\xmark}}
+
+% todo notes
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}\PackageWarning{TODO:}{#1!}}
+
+% hide box of links
+\hypersetup{hidelinks}
+
+\usepackage[numbers,sort]{natbib}
+\setlength{\bibsep}{0.0pt}
+\bibliographystyle{plainnat}
+\renewcommand{\bibsection}{\section*{References}}
+\def\UrlBreaks{\do\/\do-}
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % %
+\newcommand{\modullang}{Master Project: Distributed Systems}
+\newcommand{\semester}{Summer Term 2022}
+\newcommand{\modul}{PJ DS}
+\newcommand{\blatt}{Report}
+\newcommand{\datum}{\today}
+\newcommand{\abgabedatum}{15. September 2022}
+\newcommand{\ersterName}{Julian Legler}
+\newcommand{\zweiterName}{Marcin Ozimirski}
+\newcommand{\dritterName}{Matthias Seiler}
+% % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % %
+
+\begin{document} 
+
+%%% Kopfzeile linker Bereich
+%      gerade Seite   ungerade Seite
+\lhead[ \leftmark   ]{\textbf{\modul}}
+%%% Kopfzeile mittlerer Bereich
+%      gerade Seite   ungerade Seite
+\chead[\rightmark   ]{\rightmark{}}
+%%% Kopfzeile linker Bereich
+%      gerade Seite             ungerade Seite
+\rhead[\textbf{text}]{\blatt}
+
+
+	%-- Deckblatt --						      
+    \title{\textbf{\modullang\\[0.25cm] \normalsize{\semester} \\[1.5cm]}
+		\normalsize{\textbf{\blatt}}
+		\\
+		Monitoring of Scientific Workflows
+		
+	}
+	\author{\\
+		\ersterName \\
+		\zweiterName \\
+		\dritterName \\ \\ \\ \\ \\ 
+		Pages: \pageref{LastPage} \\ \\ \\ \\
+		}
+	\date{Date of submission: \abgabedatum} 
+	\maketitle
+	\newpage
+	
+	
+\renewcommand{\labelenumi}{\alph{enumi})}
+\renewcommand{\labelenumii}{(\roman{enumii})}
+\renewcommand{\labelenumiii}{\arabic{enumiii}.}
+%\renewcommand{\labelenumii}{\textbf{-}}	
+%-- Eigentlicher Text --
+\renewcommand*\contentsname{Contents}
+\tableofcontents
+\newpage
+\section{Introduction}
+Lorem ipsum \cite{carbone2018apacheFlink}
+\section{Design?}
+Lorem \todo{stuff} ipsum
+
+% References
+\newpage
+\bibliography{bib}
+\end{document}
