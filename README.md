@@ -87,7 +87,8 @@ Simply run `./setup.sh` in the cloned repository directory.
 
 ### Deprovision
 > IMPORTANT: Always shut down all instances when you are done working!
-> Either using [https://console.cloud.google.com](https://console.cloud.google.com) or `gcloud container clusters delete cluster-1 --region=europe-west3-b`.
+> 
+Run `./deprovision.sh` to prune all artificats and confirm with `y`.
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
