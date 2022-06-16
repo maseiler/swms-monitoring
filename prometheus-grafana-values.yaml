@@ -16,3 +16,11 @@ prometheus:
         scrape_interval: 5s
         static_configs:
           - targets: ['ebpf-exporter-service.ebpf.svc.cluster.local:9435']
+
+kube-state-metrics:
+  metricLabelsAllowlist:
+    - namespaces=[*]
+    - pods=[*]
+  metricAnnotationsAllowList:
+    - pods=[*]
+    - namespaces=[*]
