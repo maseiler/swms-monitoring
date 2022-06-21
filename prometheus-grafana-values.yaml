@@ -15,7 +15,7 @@ prometheus:
       - job_name: 'ebpf'
         scrape_interval: 5s
         static_configs:
-          - targets: ['ebpf-exporter-service.ebpf.svc.cluster.local:9435']
+          - targets: ['ebpf-exporter-swms.kube-system.svc.cluster.local:9435']
 
 kube-state-metrics:
   metricLabelsAllowlist:
