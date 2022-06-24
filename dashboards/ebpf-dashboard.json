@@ -25,7 +25,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1655406408920,
+  "id": 29,
+  "iteration": 1656073832934,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -94,7 +95,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_latency_seconds_bucket{operation=\"read\"}[$__interval])",
+          "expr": "rate(ebpf_exporter_bio_latency_seconds_bucket{instance=~\"$instance\", operation=\"read\"}[$__interval])",
           "format": "heatmap",
           "hide": false,
           "interval": "20s",
@@ -180,7 +181,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_latency_seconds_bucket{operation=\"write\"}[$__interval])",
+          "expr": "rate(ebpf_exporter_bio_latency_seconds_bucket{instance=~\"$instance\", operation=\"write\"}[$__interval])",
           "format": "heatmap",
           "hide": false,
           "interval": "20s",
@@ -278,10 +279,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "histogram_quantile(0.9, rate(ebpf_exporter_bio_latency_seconds_bucket[$__interval]) )",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.9, rate(ebpf_exporter_bio_latency_seconds_bucket{instance=~\"$instance\"}[$__interval]) )",
           "hide": false,
           "interval": "20s",
-          "legendFormat": "90% {{ operation }}",
+          "legendFormat": "90% {{ operation }} ({{instance}})",
+          "range": true,
           "refId": "A"
         },
         {
@@ -289,10 +292,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "histogram_quantile(0.95, rate(ebpf_exporter_bio_latency_seconds_bucket[$__interval]) )",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, rate(ebpf_exporter_bio_latency_seconds_bucket{instance=~\"$instance\"}[$__interval]) )",
           "hide": false,
           "interval": "20s",
-          "legendFormat": "95% {{ operation }}",
+          "legendFormat": "95% {{ operation }} ({{instance}})",
+          "range": true,
           "refId": "B"
         },
         {
@@ -300,10 +305,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_latency_seconds_sum[$__interval]) / rate(ebpf_exporter_bio_latency_seconds_count[$__interval])",
+          "editorMode": "code",
+          "expr": "rate(ebpf_exporter_bio_latency_seconds_sum{instance=~\"$instance\"}[$__interval]) / rate(ebpf_exporter_bio_latency_seconds_count{instance=~\"$instance\"}[$__interval])",
           "hide": false,
           "interval": "20s",
-          "legendFormat": "{{ operation }} average",
+          "legendFormat": "{{ operation }} average ({{instance}})",
+          "range": true,
           "refId": "C"
         }
       ],
@@ -392,7 +399,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{operation=\"read\"}[$__interval]) or rate(ebpf_exporter_bio_size_bytes_bucket{operation=\"read\"}[5m])",
+          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{instance=~\"$instance\", operation=\"read\"}[$__interval]) or rate(ebpf_exporter_bio_size_bytes_bucket{operation=\"read\"}[5m])",
           "format": "heatmap",
           "hide": true,
           "interval": "20s",
@@ -405,7 +412,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{operation=\"read\"}[$__interval])",
+          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{instance=~\"$instance\", operation=\"read\"}[$__interval])",
           "format": "heatmap",
           "hide": false,
           "interval": "20s",
@@ -418,7 +425,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{operation=\"read\"}[5m])",
+          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{instance=~\"$instance\", operation=\"read\"}[5m])",
           "format": "heatmap",
           "hide": true,
           "interval": "20s",
@@ -479,7 +486,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{operation=\"write\"}[$__interval]) or rate(ebpf_exporter_bio_size_bytes_bucket{operation=\"write\"}[5m])",
+          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{instance=~\"$instance\", operation=\"write\"}[$__interval]) or rate(ebpf_exporter_bio_size_bytes_bucket{instance=~\"$instance\", operation=\"write\"}[5m])",
           "format": "heatmap",
           "hide": true,
           "interval": "20s",
@@ -492,7 +499,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{operation=\"write\"}[$__interval])",
+          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{instance=~\"$instance\", operation=\"write\"}[$__interval])",
           "format": "heatmap",
           "hide": false,
           "interval": "20s",
@@ -505,7 +512,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{operation=\"write\"}[5m])",
+          "expr": "rate(ebpf_exporter_bio_size_bytes_bucket{instance=~\"$instance\", operation=\"write\"}[5m])",
           "format": "heatmap",
           "hide": true,
           "interval": "20s",
@@ -591,10 +598,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "histogram_quantile(0.9, rate(ebpf_exporter_bio_size_bytes_bucket[$__interval]) )",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.9, rate(ebpf_exporter_bio_size_bytes_bucket{instance=~\"$instance\"}[$__interval]) )",
           "hide": false,
           "interval": "20s",
-          "legendFormat": "90% {{ operation }}",
+          "legendFormat": "90% {{ operation }} {{instance}})",
+          "range": true,
           "refId": "A"
         },
         {
@@ -602,10 +611,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "histogram_quantile(0.95, rate(ebpf_exporter_bio_size_bytes_bucket[$__interval]) )",
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, rate(ebpf_exporter_bio_size_bytes_bucket{instance=~\"$instance\"}[$__interval]) )",
           "hide": false,
           "interval": "20s",
-          "legendFormat": "95% {{ operation }}",
+          "legendFormat": "95% {{ operation }} ({{instance}})",
+          "range": true,
           "refId": "B"
         },
         {
@@ -613,10 +624,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_size_bytes_sum[$__interval]) / rate(ebpf_exporter_bio_size_bytes_count[$__interval])",
+          "editorMode": "code",
+          "expr": "rate(ebpf_exporter_bio_size_bytes_sum{instance=~\"$instance\"}[$__interval]) / rate(ebpf_exporter_bio_size_bytes_count{instance=~\"$instance\"}[$__interval])",
           "hide": false,
           "interval": "20s",
-          "legendFormat": "{{ operation }} average",
+          "legendFormat": "{{ operation }} average ({{instance}})",
+          "range": true,
           "refId": "C"
         }
       ],
@@ -677,7 +690,7 @@
         "y": 37
       },
       "hiddenSeries": false,
-      "id": 27,
+      "id": 28,
       "interval": "",
       "legend": {
         "alignAsTable": true,
@@ -713,10 +726,12 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(ebpf_exporter_bio_size_bytes_sum[$__interval])",
+          "editorMode": "code",
+          "expr": "rate(ebpf_exporter_bio_size_bytes_sum{instance=~\"$instance\"}[$__interval])",
           "hide": false,
           "interval": "20s",
-          "legendFormat": "Sum {{ operation }}",
+          "legendFormat": "Sum {{ operation }} ({{instance}})",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -759,7 +774,39 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "10.84.0.6:9435"
+          ],
+          "value": [
+            "10.84.0.6:9435"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(ebpf_exporter_bio_size_bytes_sum, instance)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Instance",
+        "multi": true,
+        "name": "instance",
+        "options": [],
+        "query": {
+          "query": "label_values(ebpf_exporter_bio_size_bytes_sum, instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-15m",
@@ -783,6 +830,6 @@
   "timezone": "",
   "title": "eBPF Disk I/O",
   "uid": "eaDORvzMz",
-  "version": 1,
+  "version": 5,
   "weekStart": ""
 }

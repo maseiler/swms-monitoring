@@ -1,13 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: {{ include "ebpf-exporter-swms.fullname" . }}
   labels:
     {{- include "ebpf-exporter-swms.labels" . | nindent 4 }}
+  annotations:
+    prometheus.io/scrape: 'true'
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "ebpf-exporter-swms.selectorLabels" . | nindent 6 }}
