@@ -28,13 +28,9 @@ printf "\nAirflow UI accessible via http://localhost:8080\n  User: pjds\n  Pass:
 
 # deploy eBPF Exporter
 printf "\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n\t Deploying eBPF Exporter...\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
-kubectl create namespace ebpf
-kubectl run ebpf-exporter \
-  -n ebpf \
-  --image=europe-west3-docker.pkg.dev/resonant-forge-350508/swms-monitoring/ebpf-srn:focal-m \
-  --privileged
-
-kubectl apply -f ebpf-exporter-service.yaml -n ebpf
+helm install ebpf ebpf-exporter-swms \
+  --namespace kube-system \
+  -f ebpf-exporter-swms/values.yaml
 
 # deploy Prometheus and Grafana
 printf "\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n\t Deploying Prometheus and Grafana...\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"

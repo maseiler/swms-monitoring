@@ -1,0 +1,16 @@
+apiVersion: v2
+name: ebpf-exporter-swms
+description: A eBPF to Prometheus Helm chart for Scientific Workflow Management Systems
+
+type: application
+
+version: 0.1.0
+
+# appVersion matches ebpf_exporter version
+appVersion: "1.2.5"
+
+home: https://github.com/maseiler/swms-monitoring
+
+sources:
+- https://github.com/cloudflare/ebpf_exporter
+- https://github.com/srnbckr/ebpf-exporter-docker

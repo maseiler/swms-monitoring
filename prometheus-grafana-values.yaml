@@ -4,6 +4,10 @@
 grafana:
   adminUser: pjds
   adminPassword: pjds
+  sidecar:
+    dashboards:
+      provider:
+        allowUiUpdates: true
 
 prometheus:
   prometheusSpec:
@@ -14,8 +18,8 @@ prometheus:
           - targets: ['airflow-statsd.airflow.svc.cluster.local:9102']
       - job_name: 'ebpf'
         scrape_interval: 5s
-        static_configs:
-          - targets: ['ebpf-exporter-service.ebpf.svc.cluster.local:9435']
+        kubernetes_sd_configs:
+        - role: endpoints
 
 kube-state-metrics:
   metricLabelsAllowlist:
