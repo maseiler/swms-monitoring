@@ -13,6 +13,8 @@ webserver:
 
 workers:
   replicas: 3
+  persistence:
+    size: 20Gi
 
 env:
   - name: "AIRFLOW__CORE__LOAD_EXAMPLES"
