@@ -49,10 +49,28 @@ spec:
           volumeMounts:
             - name: config 
               mountPath: /config/
+            - name: kernel
+              mountPath: /sys/kernel/debug
+            - name: modules
+              mountPath: /lib/modules/
+            - name: cgroup
+              mountPath: /sys/fs/cgroup
       volumes:
         - name: config
           configMap:
             name: {{ .Release.Name }}-configmap
+        - name: kernel
+          hostPath:
+            path: /sys/kernel/debug
+            type: Directory
+        - name: modules
+          hostPath:
+            path: /lib/modules/
+            type: Directory
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: Directory
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
