@@ -2,9 +2,9 @@
 replicaCount: 1
 
 image:
-  repository: srnbckr/ebpf_exporter
+  repository: julianlegler/ebpf_exporter
   pullPolicy: IfNotPresent
-  tag: "focal"
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -21,6 +21,15 @@ podSecurityContext: {}
 
 securityContext:
   privileged: true
+
+extraVolumeMounts:
+  - name: docker
+    mountPath: /var/run/docker.sock
+
+extraVolumes: 
+  - name: docker
+    hostPath:
+      path: /var/run/docker.sock
 
 service:
   type: ClusterIP

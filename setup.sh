@@ -8,7 +8,7 @@ gcloud config set project resonant-forge-350508
 
 # when conducting final benchmarks, we may want to use better machines
 gcloud container clusters create cluster-1 \
-  --machine-type e2-medium \
+  --machine-type e2-standard-4 \
   --image-type "ubuntu_containerd" \
   --num-nodes 3 \
   --region "europe-west3-b" \
@@ -31,6 +31,8 @@ printf "\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒�
 helm install ebpf ebpf-exporter-swms \
   --namespace kube-system \
   -f ebpf-exporter-swms/values.yaml
+
+kubectl apply -f ebpf-exporter-swms/clusterrolebinding.yaml
 
 # deploy Prometheus and Grafana
 printf "\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n\t Deploying Prometheus and Grafana...\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
