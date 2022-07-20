@@ -48,23 +48,20 @@ data:
           #include <uapi/linux/ptrace.h>
 
           struct key_t {
-            u64 ip;
-            char command[128];
-            u64 pid;
-            u64 pid2;
-            u64 pid3;
+              u64 ip;
+              char command[128];
+              u64 dag_id;
+              u64 run_id;
+              u64 task_id;
           };
 
           BPF_HASH(counts, struct key_t);
 
           int do_count(struct pt_regs *ctx) {
-            u64 id = bpf_get_current_pid_tgid();
-            u64 pid = id >> 32; // PID is higher part
-            struct key_t key = { .ip = PT_REGS_IP(ctx) - 1, .pid = pid, .pid2 = pid, .pid3 = pid };
-            bpf_get_current_comm(&key.command, sizeof(key.command));
+              struct key_t key = { .ip = PT_REGS_IP(ctx) - 1 };
+              bpf_get_current_comm(&key.command, sizeof(key.command));
 
-        
-            counts.increment(key);
+              counts.increment(key);
 
-            return 0;
+              return 0;
           }
