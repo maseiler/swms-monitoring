@@ -22,15 +22,6 @@ podSecurityContext: {}
 securityContext:
   privileged: true
 
-extraVolumeMounts:
-  - name: docker
-    mountPath: /var/run/docker.sock
-
-extraVolumes: 
-  - name: docker
-    hostPath:
-      path: /var/run/docker.sock
-
 service:
   type: ClusterIP
   port: 9435
