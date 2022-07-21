@@ -2,9 +2,9 @@
 replicaCount: 1
 
 image:
-  repository: srnbckr/ebpf_exporter
+  repository: julianlegler/ebpf_exporter
   pullPolicy: IfNotPresent
-  tag: "focal"
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""

@@ -192,6 +192,18 @@ data:
                       regexps:
                         - ^systemd-journal$
                         - ^syslog-ng$
+                - name: dag_id
+                  size: 8
+                  decoders:
+                    - name: airflow_dag_id
+                - name: run_id
+                  size: 8
+                  decoders:
+                    - name: airflow_run_id
+                - name: task_id
+                  size: 8
+                  decoders:
+                    - name: airflow_task_id
         kprobes:
           add_to_page_cache_lru: do_count
           mark_page_accessed: do_count
@@ -203,6 +215,9 @@ data:
           struct key_t {
               u64 ip;
               char command[128];
+              u64 dag_id;
+              u64 run_id;
+              u64 task_id;
           };
 
           BPF_HASH(counts, struct key_t);

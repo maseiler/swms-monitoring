@@ -25,8 +25,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 29,
-  "iteration": 1656587957836,
+  "id": 34,
+  "iteration": 1658426185763,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -37,14 +37,14 @@
       },
       "description": "",
       "gridPos": {
-        "h": 4,
+        "h": 3,
         "w": 24,
         "x": 0,
         "y": 0
       },
       "id": 30,
       "options": {
-        "content": "# biolatency\nbiolatency traces block device I/O (disk I/O), and records the distribution\nof I/O latency (time",
+        "content": "# biolatency\nbiolatency traces block device I/O (disk I/O), and records the distribution\nof I/O latency",
         "mode": "markdown"
       },
       "pluginVersion": "8.5.3",
@@ -60,7 +60,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 4
+        "y": 3
       },
       "id": 15,
       "panels": [],
@@ -85,7 +85,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 5
+        "y": 4
       },
       "heatmap": {},
       "hideZeroBuckets": true,
@@ -171,7 +171,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 5
+        "y": 4
       },
       "heatmap": {},
       "hideZeroBuckets": true,
@@ -260,7 +260,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 15
       },
       "hiddenSeries": false,
       "id": 19,
@@ -377,7 +377,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 23
       },
       "id": 17,
       "panels": [],
@@ -402,7 +402,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 25
+        "y": 24
       },
       "heatmap": {},
       "hideZeroBuckets": true,
@@ -489,7 +489,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 25
+        "y": 24
       },
       "heatmap": {},
       "hideZeroBuckets": true,
@@ -579,7 +579,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 32
       },
       "hiddenSeries": false,
       "id": 26,
@@ -707,7 +707,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 40
       },
       "hiddenSeries": false,
       "id": 28,
@@ -789,7 +789,7 @@
       }
     }
   ],
-  "refresh": "",
+  "refresh": "10s",
   "schemaVersion": 36,
   "style": "dark",
   "tags": [],
@@ -797,12 +797,12 @@
     "list": [
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
-            "10.84.0.11:9435"
+            "10.84.0.9:9435"
           ],
           "value": [
-            "10.84.0.11:9435"
+            "10.84.0.9:9435"
           ]
         },
         "datasource": {
@@ -828,12 +828,12 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
-            "All"
+            "sda"
           ],
           "value": [
-            "$__all"
+            "sda"
           ]
         },
         "datasource": {
@@ -859,12 +859,12 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
-            "All"
+            "ebpf"
           ],
           "value": [
-            "$__all"
+            "ebpf"
           ]
         },
         "datasource": {
@@ -911,7 +911,7 @@
   },
   "timezone": "",
   "title": "eBPF biolatency",
-  "uid": "eaDORvzMz",
-  "version": 6,
+  "uid": "eaLOavYMz",
+  "version": 2,
   "weekStart": ""
 }
