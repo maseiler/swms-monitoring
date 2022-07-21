@@ -7,6 +7,171 @@ metadata:
 data:
   ebpf-config.yaml: |-
     programs:
+      - name: bio
+        # https://github.com/cloudflare/ebpf_exporter/blob/master/examples/bio-tracepoints.yaml
+        metrics:
+          histograms:
+            - name: bio_latency_seconds
+              help: Block IO latency histogram
+              table: io_latency
+              bucket_type: exp2
+              bucket_min: 0
+              bucket_max: 26
+              bucket_multiplier: 0.000001 # microseconds to seconds
+              labels:
+                - name: device
+                  size: 32
+                  decoders:
+                    - name: string
+                - name: operation
+                  size: 8
+                  decoders:
+                    - name: uint
+                    - name: static_map
+                      static_map:
+                        1: read
+                        2: write
+                - name: bucket
+                  size: 8
+                  decoders:
+                    - name: uint
+            - name: bio_size_bytes
+              help: Block IO size histogram with kibibyte buckets
+              table: io_size
+              bucket_type: exp2
+              bucket_min: 0
+              bucket_max: 15
+              bucket_multiplier: 1024 # kibibytes to bytes
+              labels:
+                - name: device
+                  size: 32
+                  decoders:
+                    - name: string
+                - name: operation
+                  size: 8
+                  decoders:
+                    - name: uint
+                    - name: static_map
+                      static_map:
+                        1: read
+                        2: write
+                - name: bucket
+                  size: 8
+                  decoders:
+                    - name: uint
+        kprobes:
+          # Remove blk_start_request if you're running Linux 5.3+, or better yet
+          # use tracepoint based code that depends on stable kernel ABI.
+          #blk_start_request: trace_req_start
+          blk_mq_start_request: trace_req_start
+          blk_account_io_completion: trace_req_completion
+        code: |
+          #include <linux/blkdev.h>
+          #include <linux/blk_types.h>
+
+          typedef struct disk_key {
+              char disk[32];
+              u8 op;
+              u64 slot;
+          } disk_key_t;
+
+          // Max number of disks we expect to see on the host
+          const u8 max_disks = 255;
+
+          // 27 buckets for latency, max range is 33.6s .. 67.1s
+          const u8 max_latency_slot = 26;
+
+          // 16 buckets per disk in kib, max range is 16mib .. 32mib
+          const u8 max_size_slot = 15;
+
+          // Hash to temporily hold the start time of each bio request, max 10k in-flight by default
+          BPF_HASH(start, struct request *);
+
+          // Histograms to record latencies
+          BPF_HISTOGRAM(io_latency, disk_key_t, (max_latency_slot + 2) * max_disks);
+
+          // Histograms to record sizes
+          BPF_HISTOGRAM(io_size, disk_key_t, (max_size_slot + 2) * max_disks);
+
+          // Record start time of a request
+          int trace_req_start(struct pt_regs *ctx, struct request *req) {
+              u64 ts = bpf_ktime_get_ns();
+              start.update(&req, &ts);
+
+              return 0;
+          }
+
+          // Calculate request duration and store in appropriate histogram bucket
+          int trace_req_completion(struct pt_regs *ctx, struct request *req, unsigned int bytes) {
+              u64 *tsp, delta;
+
+              // Fetch timestamp and calculate delta
+              tsp = start.lookup(&req);
+              if (tsp == 0) {
+                  return 0; // missed issue
+              }
+
+              // There are write request with zero length on sector zero,
+              // which do not seem to be real writes to device.
+              if (req->__sector == 0 && req->__data_len == 0) {
+                return 0;
+              }
+
+              // Disk that received the request
+              struct gendisk *disk = req->rq_disk;
+
+              // Delta in nanoseconds
+              delta = bpf_ktime_get_ns() - *tsp;
+
+              // Convert to microseconds
+              delta /= 1000;
+
+              // Latency histogram key
+              u64 latency_slot = bpf_log2l(delta);
+
+              // Cap latency bucket at max value
+              if (latency_slot > max_latency_slot) {
+                  latency_slot = max_latency_slot;
+              }
+
+              disk_key_t latency_key = { .slot = latency_slot };
+              bpf_probe_read(&latency_key.disk, sizeof(latency_key.disk), &disk->disk_name);
+
+              // Size in kibibytes
+              u64 size_kib = bytes / 1024;
+
+              // Request size histogram key
+              u64 size_slot = bpf_log2(size_kib);
+
+              // Cap latency bucket at max value
+              if (size_slot > max_size_slot) {
+                  size_slot = max_size_slot;
+              }
+
+              disk_key_t size_key = { .slot = size_slot };
+              bpf_probe_read(&size_key.disk, sizeof(size_key.disk), &disk->disk_name);
+
+              if ((req->cmd_flags & REQ_OP_MASK) == REQ_OP_WRITE) {
+                  latency_key.op = 2;
+                  size_key.op    = 2;
+              } else {
+                  latency_key.op = 1;
+                  size_key.op    = 1;
+              }
+
+              io_latency.increment(latency_key);
+              io_size.increment(size_key);
+
+              // Increment sum keys
+              latency_key.slot = max_latency_slot + 1;
+              io_latency.increment(latency_key, delta);
+              size_key.slot = max_size_slot + 1;
+              io_size.increment(size_key, size_kib);
+
+              start.delete(&req);
+
+              return 0;
+          }
       - name: cachestat
         # https://github.com/cloudflare/ebpf_exporter/blob/master/examples/cachestat-complex.yaml
         metrics:
@@ -62,6 +227,319 @@ data:
               bpf_get_current_comm(&key.command, sizeof(key.command));
 
               counts.increment(key);
+
+              return 0;
+          }
+      - name: dcstat
+        # https://github.com/cloudflare/ebpf_exporter/blob/master/examples/dcstat.yaml
+        metrics:
+          counters:
+            - name: dcache_ops_total
+              help: Directory cache entry ops
+              table: counts
+              labels:
+                - name: op
+                  size: 1
+                  decoders:
+                    - name: uint
+                    - name: static_map
+                      static_map:
+                        1: refs
+                        2: slow
+                        3: miss
+                - name: command
+                  size: 128
+                  decoders:
+                    - name: string
+        kprobes:
+          lookup_fast: count_fast
+        kretprobes:
+          d_lookup: count_lookup
+        code: |
+          #include <uapi/linux/ptrace.h>
+
+          enum stats {
+              S_REFS = 1,
+              S_SLOW = 2,
+              S_MISS = 3,
+          };
+
+          struct key_t {
+              u8 op;
+              char command[128];
+          };
+
+          BPF_HASH(counts, struct key_t);
+
+          int count_fast(struct pt_regs *ctx) {
+              struct key_t key = { .op = S_REFS };
+
+              bpf_get_current_comm(&key.command, sizeof(key.command));
+
+              u64 zero = 0, *val;
+              val = counts.lookup_or_init(&key, &zero);
+              (*val)++;
+
+              return 0;
+          }
+
+          int count_lookup(struct pt_regs *ctx) {
+              u64 zero = 0, *val;
+
+              struct key_t key = { .op = S_SLOW };
+
+              bpf_get_current_comm(&key.command, sizeof(key.command));
+
+              val = counts.lookup_or_init(&key, &zero);
+              (*val)++;
+
+              if (PT_REGS_RC(ctx) == 0) {
+                  key.op = S_MISS;
+
+                  val = counts.lookup_or_init(&key, &zero);
+                  (*val)++;
+              }
+
+              return 0;
+          }
+      - name: runqlat
+        # https://github.com/cloudflare/ebpf_exporter/blob/master/examples/runqlat.yaml
+        metrics:
+          histograms:
+            - name: run_queue_latency_seconds
+              help: Run queue latency histogram
+              table: run_queue_latencty
+              bucket_type: exp2
+              bucket_min: 0
+              bucket_max: 26
+              bucket_multiplier: 0.000001 # microseconds to seconds
+              labels:
+                - name: bucket
+                  size: 8
+                  decoders:
+                    - name: uint
+        kprobes:
+          ttwu_do_wakeup: trace_ttwu_do_wakeup
+          wake_up_new_task: trace_wake_up_new_task
+          finish_task_switch: trace_run
+        code: |
+          #include <linux/sched.h>
+
+          // 27 buckets for latency, max range is 33.6s .. 67.1s
+          const u8 max_latency_slot = 26;
+
+          // Histograms to record latencies
+          BPF_HISTOGRAM(run_queue_latencty, u64, max_latency_slot + 2);
+
+          // Pid to enqueue time map
+          BPF_HASH(start, u32);
+
+          // Record enqueue timestamp
+          static int trace_enqueue(u32 tgid, u32 pid) {
+              if (tgid == 0 && pid == 0) {
+                  // Skip swapper kthread
+                  return 0;
+              }
+
+              u64 ts = bpf_ktime_get_ns();
+              start.update(&pid, &ts);
+
+              return 0;
+          }
+
+          int trace_wake_up_new_task(struct pt_regs *ctx, struct task_struct *p) {
+              return trace_enqueue(p->tgid, p->pid);
+          }
+
+          int trace_ttwu_do_wakeup(struct pt_regs *ctx, void* rq, struct task_struct *p, int wake_flags) {
+              return trace_enqueue(p->tgid, p->pid);
+          }
+
+          // Calculate latency
+          int trace_run(struct pt_regs *ctx, struct task_struct *prev) {
+              // Treat like an enqueue event and store timestamp
+              if (prev->state == TASK_RUNNING) {
+                  trace_enqueue(prev->tgid, prev->pid);
+              }
+
+              u32 tgid = bpf_get_current_pid_tgid() >> 32;
+              u32 pid = bpf_get_current_pid_tgid();
+
+              // Fetch timestamp and calculate delta
+              u64 *tsp = start.lookup(&pid);
+              if (tsp == 0) {
+                  // Missed enqueue
+                  return 0;
+              }
+
+              // Latency in microseconds
+              u64 latency_us = (bpf_ktime_get_ns() - *tsp) / 1000;
+
+              // Latency histogram key
+              u64 latency_slot = bpf_log2l(latency_us);
+
+              // Cap latency bucket at max value
+              if (latency_slot > max_latency_slot) {
+                  latency_slot = max_latency_slot;
+              }
+
+              // Increment bucket key
+              run_queue_latencty.increment(latency_slot);
+
+              // Increment sum key
+              run_queue_latencty.increment(max_latency_slot + 1, latency_us);
+
+              // Remove enqueued task
+              start.delete(&pid);
+
+              return 0;
+          }
+      - name: syslat
+        # https://github.com/cloudflare/ebpf_exporter/blob/master/examples/syslat.yaml
+        metrics:
+          histograms:
+            - bucket_keys:
+                - 100 # 100us
+                - 1000 # 1ms
+                - 250000 # 250ms
+                - 1000000 # 1s
+                - 2500000 # 2.5s
+                - 5000000 # 5s
+              bucket_multiplier: 1e-06
+              bucket_type: fixed
+              help: Latency of Linux syscalls
+              labels:
+                - decoders:
+                    - name: ksym
+                  name: function
+                  size: 8
+                - decoders:
+                    - name: uint
+                  name: bucket
+                  size: 8
+              name: syscall_latency_seconds
+              table: dist
+        kprobes:
+          do_syscall_64: trace_func_entry
+          syscall_slow_exit_work: trace_func_entry
+          # Other options:
+          # SyS_accept: trace_func_entry
+          # SyS_accept4: trace_func_entry
+          # SyS_connect: trace_func_entry
+        kretprobes:
+          do_syscall_64: trace_func_return
+          syscall_slow_exit_work: trace_func_return
+          # Other options:
+          # SyS_accept: trace_func_return
+          # SyS_accept4: trace_func_return
+          # SyS_connect: trace_func_return
+        code: |
+          #include <uapi/linux/ptrace.h>
+
+          // Set up user-defined buckets.
+          const static u64 buckets[] = {100, 1000, 250000, 1000000, 2500000, 5000000};
+          const static int NUM_BUCKETS = sizeof(buckets) / sizeof(buckets[0]);
+
+          // Define the key used in the latency histogram.
+          typedef struct hist_key {
+              u64 ip;
+              u64 bucket;
+          } hist_key_t;
+
+          // Used to keep track of the start time of syscalls.
+          BPF_HASH(start, u32);
+
+          // Used to keep track of the address of the syscall kprobe (e.g. do_syscall_64).
+          BPF_HASH(ipaddr, u32);
+
+          // Used to record the latency of syscalls.
+          BPF_HISTOGRAM(dist, hist_key_t);
+
+          static u64 get_bucket_key(u64 value) {
+              for (int i = 0; i < NUM_BUCKETS; i++) {
+                  if (value <= buckets[i]) {
+                      return buckets[i];
+                  }
+              }
+
+              // Cap at maximum value
+              return buckets[NUM_BUCKETS-1];
+          }
+
+          // Called when a syscall kprobe is entered.
+          int trace_func_entry(struct pt_regs *ctx) {
+              // Get the process ID that resulted in this syscall kprobe.
+              u64 pid_tgid = bpf_get_current_pid_tgid();
+              u32 pid = pid_tgid;
+
+              // Get and record the current kernel time (in nanoseconds).
+              u64 ts = bpf_ktime_get_ns();
+              start.update(&pid, &ts);
+
+              // Get and record the kprobe address.
+              u64 ip = PT_REGS_IP(ctx);
+              ipaddr.update(&pid, &ip);
+
+              return 0;
+          }
+
+          // Called when a syscall kprobe returns.
+          int trace_func_return(struct pt_regs *ctx) {
+              // Get the process ID that resulted in this syscall kprobe.
+              u64 pid_tgid = bpf_get_current_pid_tgid();
+              u32 pid = pid_tgid;
+
+              // Will be used to retrieve start time and calculate latency.
+              u64 *tsp, delta;
+
+              // Retrieve the start time that was stored in trace_func_entry.
+
+              tsp = start.lookup(&pid);
+              // Return is no start time was found.
+              if (tsp == 0) {
+                  return 0;
+              }
+
+              // Calculate the latency of the syscall.
+              delta = bpf_ktime_get_ns() - *tsp;
+
+              // Convert to microseconds.
+              delta /= 1000;
+
+              // Remove the start time from the hash.
+              start.delete(&pid);
+
+              // Retrieve the kprobe address.
+              u64 ip, *ipp = ipaddr.lookup(&pid);
+
+              // Return if kprobe address not found.
+              if (ipp == 0) {
+                  return 0;
+              }
+              ip = *ipp;
+
+              // Construct histogram key.
+              hist_key_t key;
+              // From ebpf_exporter docs:
+              // > Note that sometimes you can observe PT_REGS_IP being off by one.
+              // > You can subtract 1 in your code to make it point to the right
+              // > instruction that can be found /proc/kallsyms.
+              key.ip = ip - 1;
+              // Get the user-defined bucket of the latency, and increment the
+              // slot for that value in the latency histogram.
+              key.bucket = get_bucket_key(delta);
+
+              dist.increment(key);
+
+              // Increment the optional sum key.
+              hist_key_t max_key;
+              max_key.bucket = buckets[NUM_BUCKETS - 1] + 1;
+              max_key.ip = key.ip;
+
+              dist.increment(max_key, delta);
+
+              // Delete the kprobe address from the hash.
+              ipaddr.delete(&pid);
 
               return 0;
           }
