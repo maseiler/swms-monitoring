@@ -46,7 +46,16 @@ create_k3s_cluster() {
 
     gcloud compute firewall-rules create k3s --allow=tcp:6443 --target-tags=k3s
 
-gcloud container clusters get-credentials cluster-1 --zone europe-west3-b --project resonant-forge-350508
+    gcloud compute instances list \
+      --filter=tags.items=k3s-worker \
+      --format="get(networkInterfaces[0].accessConfigs.natIP)" |
+      xargs -L1 k3sup join \
+        --server-ip $primary_server_ip \
+        --ssh-key ~/.ssh/google_compute_engine \
+        --user $(whoami) \
+        --ip
+  )
+}
 
 deploy_airflow() {
   helm install airflow apache-airflow/airflow \
@@ -64,7 +73,7 @@ deploy_ebpf() {
     -f ebpf-exporter-swms/values.yaml
 
   kubectl apply -f ebpf-exporter-swms/clusterrolebinding.yaml
-  
+
   printf "\neBPF Exporter installed.\n"
 }
 
