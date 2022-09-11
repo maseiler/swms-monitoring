@@ -59,6 +59,18 @@ data:
                   size: 8
                   decoders:
                     - name: uint
+                - name: dag_id
+                  size: 8
+                  decoders:
+                    - name: airflow_dag_id
+                - name: run_id
+                  size: 8
+                  decoders:
+                    - name: airflow_run_id
+                - name: task_id
+                  size: 8
+                  decoders:
+                    - name: airflow_task_id
         kprobes:
           # Remove blk_start_request if you're running Linux 5.3+, or better yet
           # use tracepoint based code that depends on stable kernel ABI.
@@ -73,6 +85,9 @@ data:
               char disk[32];
               u8 op;
               u64 slot;
+              u64 dag_id;
+              u64 run_id;
+              u64 task_id;
           } disk_key_t;
 
           // Max number of disks we expect to see on the host
@@ -251,6 +266,18 @@ data:
                   size: 128
                   decoders:
                     - name: string
+                - name: dag_id
+                  size: 8
+                  decoders:
+                    - name: airflow_dag_id
+                - name: run_id
+                  size: 8
+                  decoders:
+                    - name: airflow_run_id
+                - name: task_id
+                  size: 8
+                  decoders:
+                    - name: airflow_task_id
         kprobes:
           lookup_fast: count_fast
         kretprobes:
@@ -267,6 +294,9 @@ data:
           struct key_t {
               u8 op;
               char command[128];
+              u64 dag_id;
+              u64 run_id;
+              u64 task_id;
           };
 
           BPF_HASH(counts, struct key_t);
