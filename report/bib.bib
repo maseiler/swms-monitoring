@@ -1,52 +1,69 @@
-@article{carbone2018apacheFlink,
-	title = {Apache Flink: {{Stream}} and Batch Processing in a Single Engine},
-	shorttitle = {Apache Flink},
-	author = {Carbone, Paris and Katsifodimos, Asterios and Ewen, Stephan and Markl, Volker and Haridi, Seif and Tzoumas, Kostas},
-	date = {2015},
-	journaltitle = {Bulletin of the IEEE Computer Society Technical Committee on Data Engineering},
-	volume = {36},
-	publisher = {{IEEE Computer Society}},
-	number = {4}
-} 
-% TODO: remove dummy entry above
-
-@article{challengesSW,
-	title = {Examining the challenges of scientific workflows},
-	author = {Y. Gil, E. Deelman, M. Ellisman, T. Fahringer, G. Fox},
-	date = {2007},
+@article{gil2007examiningchallengesscientific,
+	title = {Examining the {{Challenges}} of {{Scientific Workflows}}},
+	author = {Gil, Yolanda and Deelman, Ewa and Ellisman, Mark and Fahringer, Thomas and Fox, Geoffrey and Gannon, Dennis and Goble, Carole and Livny, Miron and Moreau, Luc and Myers, Jim},
+	date = {2007-12},
+	journaltitle = {Computer},
 	volume = {40},
-	publisher = {{IEEE}},
-	pages = {26--34}
-} 
-
-@article{compareCloud,
-	title = {A comparative review of high-performance computing major cloud service providers},
-	author = {R. Aljamal, A. El-Mousa, F. Jubair},
-	date = {2018},
-	journaltitle = {9th International Conference},
-	publisher = {{IEEE}}	
+	number = {12},
+	pages = {24--32},
+	issn = {1558-0814},
+	doi = {10.1109/MC.2007.421},
+	abstract = {Workflows have emerged as a paradigm for representing and managing complex distributed computations and are used to accelerate the pace of scientific progress. A recent National Science Foundation workshop brought together domain, computer, and social scientists to discuss requirements of future scientific applications and the challenges they present to current workflow technologies.},
+	eventtitle = {Computer},
+	keywords = {Acceleration,Application software,Collaborative work,collaboratories,computing practices,Concurrent computing,Distributed computing,Earthquakes,scientific workflows}
 }
 
-
-@article{viperProbe,
-	title = {ViperProbe: Using eBPF Metrics to Improve Microservice Observability},
-	author = {Joshua Levin},
-	date = {2020},
-	publisher = {{Brown University}}	
+@inproceedings{aljamal2018comparativereviewhighperformance,
+	title = {A Comparative Review of High-Performance Computing Major Cloud Service Providers},
+	booktitle = {2018 9th {{International Conference}} on {{Information}} and {{Communication Systems}} ({{ICICS}})},
+	author = {Aljamal, Rawan and El-Mousa, Ali and Jubair, Fahed},
+	date = {2018-04},
+	pages = {181--186},
+	issn = {2573-3346},
+	doi = {10.1109/IACS.2018.8355463},
+	abstract = {This paper reviews the top leading cloud providers, surveys their offering related to High Performance Computing (HPC). Four top cloud provider are selected, Microsoft Windows Azure, Amazon Elastic Compute Cloud (Amazon EC2), Google Compute Engine and Oracle Cloud. Each one of them has its unique value proposition that enables it to survive in the market and make it a real competitor. A comparative analysis of the offerings and relative benefits of each are provided. This study is an introduction to our extensive work in the HPC field.},
+	eventtitle = {2018 9th {{International Conference}} on {{Information}} and {{Communication Systems}} ({{ICICS}})},
+	keywords = {Amazon EC2,Benchmark testing,Cloud computing,Computer architecture,Google Compute,High-Performance Computing,Microsoft Azure,Microsoft Windows,Oracle,performance,price,Task analysis,Virtual machining}
 }
 
-@article{captureWorkflow,
-	title = {Capturing Workflow Event Data for Monitoring, Performance Analysis, and Management of Scientific Workflows},
-	author = {Matthew D. Valerio, Satya S. Sahoo, Roger S. Barga, Jared J. Jackson},
-	date = {2008},
-	journaltitle = {Fourth IEEE International Conference on eScience},
-	publisher = {{IEEE}}	
+@inproceedings{levin2020viperproberethinkingmicroservice,
+	title = {{{ViperProbe}}: {{Rethinking Microservice Observability}} with {{eBPF}}},
+	shorttitle = {{{ViperProbe}}},
+	booktitle = {2020 {{IEEE}} 9th {{International Conference}} on {{Cloud Networking}} ({{CloudNet}})},
+	author = {Levin, Joshua and Benson, Theophilus A.},
+	date = {2020-11},
+	pages = {1--8},
+	doi = {10.1109/CloudNet51028.2020.9335808},
+	abstract = {Recent shifts to microservice-based architectures and the supporting servicemesh radically disrupt the landscape of performance-oriented management tasks. While the adoption of frameworks like Istio and Kubernetes ease the management and organization of such systems, they do not themselves provide strong observability. Microservice observability requires diverse, highly specialized, and often adaptive, metrics and algorithms to monitor both the health of individual services and the larger application. However, modern metrics collection frameworks are relatively static and rigid. We introduce ViperProbe, an eBPF-based microservices collection framework that provides (1) dynamic sampling and (2) collection of deep, diverse, and precise system metrics. Viper-Probe builds on the observation that the adoption of a common set of design patterns, e.g., servicemesh, enables offline analysis. By examining the performance profile of these patterns before deploying on production, ViperProbe can effectively reduce the set of collected metrics, thereby improving the efficiency and effectiveness of those metrics. To the best of our knowledge, ViperProbe is the first scalable eBPF-based dynamic and adaptive microservices metrics collection framework. Our results show ViperProbe has limited overhead, while significantly more effective for traditional management tasks, e.g., horizontal autoscaling.},
+	eventtitle = {2020 {{IEEE}} 9th {{International Conference}} on {{Cloud Networking}} ({{CloudNet}})},
+	keywords = {Measurement,Monitoring,Observability,Runtime,Software,Task analysis,Tools}
 }
 
-@article{ebpf,
-	 note = {\url {https://ebpf.io}}	
+@inproceedings{valerio2008capturingworkflowevent,
+	title = {Capturing {{Workflow Event Data}} for {{Monitoring}}, {{Performance Analysis}}, and {{Management}} of {{Scientific Workflows}}},
+	booktitle = {2008 {{IEEE Fourth International Conference}} on {{eScience}}},
+	author = {Valerio, Matthew D. and Sahoo, Satya S. and Barga, Roger S. and Jackson, Jared J.},
+	date = {2008-12},
+	pages = {626--633},
+	doi = {10.1109/eScience.2008.164},
+	abstract = {To effectively support real-time monitoring and performance analysis of scientific workflow execution, varying levels of event data must be captured and made available to interested parties. This paper discusses the creation of an ontology-aware workflow monitoring system for use in the Trident system which utilizes a distributed publish/subscribe event model. The implementation of the publish/subscribe system is discussed and performance results are presented.},
+	eventtitle = {2008 {{IEEE Fourth International Conference}} on {{eScience}}},
+	keywords = {Condition monitoring,Conference management,Costs,Histograms,History,Logic,Ontologies,Performance analysis,publish/subscribe,Resource management,Runtime,Trident,workflow}
 }
 
-@article{grafana,
-	note = {\url {https://grafana.com}}
+@online{ebpf,
+	title = {{{eBPF}} - {{Introduction}}, {{Tutorials}} \& {{Community Resources}}},
+	url = {https://ebpf.io/},
+	urldate = {2022-09-12}
 }
+
+@online{grafana,
+	title = {Grafana: {{The}} Open Observability Platform},
+	shorttitle = {Grafana},
+	url = {https://grafana.com/},
+	urldate = {2022-09-12},
+	abstract = {Grafana is the open source analytics \& monitoring solution for every database.},
+	langid = {english},
+	organization = {{Grafana Labs}}
+}
+
