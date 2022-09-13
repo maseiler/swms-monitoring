@@ -76,6 +76,36 @@ Fortunately, one does not have to develop everything from scratch as there are o
 
 \section{Background}
 % TODO: describe technologies we are using
+% SWMS, Airflow
+Today exists a vast number of workflow management systems, ranging form general purpose ones like Apache Airflow \cite{airflow}, Nextflow \cite{nextflow} or Pegasus \cite{pegasus} to domain specific ones e.g. Taverna \cite{taverna} for bio-informatics and astronomy, Arvados \cite{arvados} for biomedical data and many more. Each of these naturally have their advantages and disadvantages over another, due to their design and architecture and thus resulting in different stages of maturity.\\
+We decided for Airflow, since it serves the general purpose, is widely used and one of the most mature SWMS. The workflow in Airflow is described in Directed Acyclic Graph (DAG), whose nodes consists of tasks that are executed. The edges represent the dependencies and therefore the execution order of these tasks. The description of the DAG is specified by the user in a Python script. Figure \ref{fig:aiflow:dag} shows DAG that runs tests in a Kubernetes environment \cite{airflowDag}.
+\begin{figure}[h]
+	\includegraphics[width=\linewidth]{images/airflow-dag.png}
+	\caption{Airflow DAG with five tasks successfully run (dark green), one running (light green) and one in queue (gray).}
+	\label{fig:aiflow:dag}
+\end{figure}
+
+As depicted in Figure \ref{fig:aiflow:arch}, the basic architecture of Airflow consists of the following components: the \textit{User Interface}, that is served by the \textit{Webserver}, is the entry point for the user, and not only feature-rich, but also easy to use. At the heart of Airflow resides the \textit{Scheduler}, ''which handles both triggering scheduled workflows, and submitting Tasks''\cite{airflowArchitecture}. It therefore requires access to a \textit{DAG Directory}, in order to makes use of one of the provided \textit{Executor}s \cite{airflowExecutor}, that handle these tasks. The actual execution of tasks is performed by one or more \textit{Workers}. Finally, a \textit{Metadata Database} is ''used by the scheduler, executor and webserver to store state''\cite{airflowArchitecture}.
+\begin{figure}[h]
+\includegraphics[width=\linewidth]{images/airflow-architecture.png}
+\caption{Airflow architecture \cite{airflowArchitecture}}
+\label{fig:aiflow:arch}
+\end{figure}
+
+Airflow provides built-in logging and monitoring \cite{airflowMonitoring}, whose monitoring stack relies on StatsD \cite{statsd}, that gather the internal metrics and exposes them to Prometheus \cite{prometheus}. While the are numerous metrics on DAG and task level, none of them consider metrics on lower levels \cite{airflowMetrics}.
+
+% Monitoring, eBPF
+With eBPF \cite{ebpf} however, it is possible to gather metrics directly from the Linux kernel. It extends the kernel without changing the kernel source code or loading kernel modules and has therefore unrestricted access to all hardware. These little programs get triggered by certain hook point (e.g. system calls, function entry/exit, network events) and can thus be attached to almost anywhere int kernel or user applications \cite{whatebpf}. 
+Figure \ref{fig:ebpf:steps} depicts the involved steps to attach an eBPF program: in order to use the program in the Linux kernel, it expects the program in the form of bytecode. With the \texttt{bpf} system call, the program will be loaded into kernel space, where it first has to be verified (that is actually safe to run) and secondly compiled to machine specific instructions. ''This makes eBPF programs run as efficiently as natively compiled kernel code or as code loaded as a kernel module'' \cite{whatebpf}.
+\begin{figure}[h]
+	\includegraphics[width=\linewidth]{images/ebpf-steps.png}
+	\caption{Steps to attach an eBPF program \cite{whatebpf}}
+	\label{fig:ebpf:steps}
+\end{figure}
+In order to store collected information (e.g. in the form of metrics), eBPF leverages \textit{eBPF Maps} \cite{ebpfMaps}, that can be accessed not only from kernel, but also from user space.
+
+% Monitoring, Prometheus, Grafana
+The data from these eBPF maps can be exported to a more powerful monitoring systems such as Prometheus \cite{prometheus}, Graphite or InfluxDB, and  visualized with an analytics platform like Grafana or Kibana.
 
 \section{Approach}
 % TODO: how we implemented tech mentiones in background
