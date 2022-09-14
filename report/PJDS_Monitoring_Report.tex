@@ -200,6 +200,40 @@
 	To do all this automatically, an own Helm Chart is created with all the needed configurations. 
 	…
 	
+	\section{Results}
+	In the following we will show some results of our system, when we executed the DAG \textit{example\_complex } provided by Airflow \cite{exampleComplex} on three worker nodes. This workflow was executed around 11:36:30 and completed within 2:50 minutes.
+	
+	As we can see by the colors in Figure \ref{fig:results:runqlat:a}, there is increased activity between 11:37:00 and 11:39:00, with a peak (red square) where over 5700 CPU tasks had to wait between 8 µs and 16.00 µs before they could be processed by the CPU.
+	The same behaviour can be observed in Figure \ref{fig:results:runqlat:b}, which shows that the average waiting time is around 185 µs and the maximum 90th and 95th percentile at 243 µs and 1.58 ms respectively.
+	\begin{figure}[h]
+		\begin{subfigure}
+			\centering
+			\includegraphics[width=\linewidth]{images/results_runqlat_latency.png}
+			\caption{Heatmap of run queue latency of a single node.}
+			\label{fig:results:runqlat:a}
+		\end{subfigure}
+		\hfill
+		\begin{subfigure}
+			\centering
+			\includegraphics[width=\linewidth]{images/results_runqlat_percentile.png}
+			\caption{Average (blue), 95th percentile (green) and 90th percentile (green) of run queue latency on a single node.}
+			\label{fig:results:runqlat:b}
+		\end{subfigure}
+	\end{figure}
+	
+	In regard to system calls, we can see in Figure \ref{fig:results:syscalls}, that \texttt{do\_syscall\_64}, which was instructed from user space to perform a system call, had higher latencies before the DAG was triggered.
+	\begin{figure}[h]
+		\includegraphics[width=\linewidth]{images/results_syscalls_total.png}
+		\caption{System call latency for three worker nodes.}
+		\label{fig:results:syscalls}
+	\end{figure}
+	
+	The cache statistics are unfortunately not very meaningful, presumably because the exporter could not keep up with larger spikes of data. Nonetheless, one can observe in Figure \ref{fig:results:cachestat} that there has been a large increase in cache reads during workflow execution.
+	\begin{figure}[h]
+		\includegraphics[width=\linewidth]{images/results_cachestat_access.png}
+		\caption{Cache reads for three worker nodes.}
+		\label{fig:results:cachestat}
+	\end{figure}
 	
 	\section{Discussion}
 	% TODO: results and challenges
