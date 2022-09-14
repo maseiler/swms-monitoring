@@ -237,8 +237,19 @@
 	
 	\section{Discussion}
 	% TODO: results and challenges
-	\subsection{eBPF Challenges}
-	\subsection{Nextflow Challenges}
+	While our five examples demonstrate that it is possible to extend metrics for SWMS using eBPF, it does not fulfill the scope we imagined.
+	% eBPF issue
+	First, eBPF strongly depends on the underlying hardware and its access through the virtualization layer. Unfortunately, GCP does not allow access to certain \texttt{perf} events (e.g. CPU cycles, CPU instructions, cache misses, ...), limiting the number of available programs quite significantly. This issue pertains also other virtualization solutions \cite{ebpfVirtIssue1}\cite{ebpfVirtIssue2}\cite{ebpfVirtIssue3}. We assume, that this issue does not occur on bare-metal hardware, but were not able to verify this hypothesis yet.
+	
+	% other SWMS issue
+	Secondly, \todo{@Marcin Nextflow}
+	
+	\subsection{Future Work}
+	As stated in previous chapters, we were able to demonstrate a proof of concept, that could become relevant in industry, if the above issues were solved. Our solution with BCC has manifold opportunities to gather more system information. On top of that, one could integrate bpftrace as an alternative to BCC, to get an even richer set of eBPF programs. 
+	In order to deploy our monitoring solution to other cloud providers (e.g. AWS, Azure), other setup scripts are needed. Due to the above mentioned issue, a solution for bare-metal machines using k3s \cite{k3s} would be extremely valuable. 
+	More than that, other SWMS should be supported to attract a wide range of users and developers. Making the metrics loosely coupled is a crucial step hereby.
+	Ultimately, a small benchmark suite would be very helpful to evaluate the overhead of the eBPF exporter on the overall system performance.
+	
 	
 	\section{Conclusion}
 	\includegraphics[width=\linewidth]{images/placeholder.jpg}
