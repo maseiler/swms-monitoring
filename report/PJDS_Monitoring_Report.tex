@@ -1,4 +1,4 @@
-\documentclass[lettersize,journal]{IEEEtran}
+\documentclass[a4paper,journal]{IEEEtran}
 \usepackage{amsmath,amsfonts}
 \usepackage{algorithmic}
 \usepackage{algorithm}
@@ -26,16 +26,18 @@
 
 \begin{document}
 	
-	\title{Monitoring of Scientific Workflows}
+	\title{Extended Metrics Project for Apache Airflow}%Monitoring of Scientific Workflows
+	
+	
 	
 	\author{Julian Legler, Marcin Ozimirski, Matthias Seiler
 		% <-this % stops a space
-		\thanks{This paper was produced by students at TU Berlin in the course ''Master Project: Distributed Systems''}% <-this % stops a space
+		\thanks{This paper was produced by students of the Technische Universität Berlin in the course ''Master Project: Distributed Systems'' in summer 2022. All results are available in the GitHub repository: \url{https://github.com/maseiler/swms-monitoring}}% <-this % stops a space
 		%\thanks{Manuscript received April 19, 2021; revised August 16, 2021.}
 	}
 	
 	% The paper headers
-	\markboth{PJ DS - Monitoring of Scientific Workflows}%
+	\markboth{PJ DS - Extended Metrics Project for Apache Airflow}%
 	{Shell \MakeLowercase{\textit{et al.}}: A Sample Article Using IEEEtran.cls for IEEE Journals}
 	
 	%\IEEEpubid{0000--0000/00\$00.00~\copyright~2021 IEEE}
@@ -44,7 +46,7 @@
 	
 	\begin{abstract}
 		
-		The emergence of Scientific Workflow Management Systems (SWMS) allowed speeding up scientific progress in various fields. The main task of such systems is to represent and manage complex distributed scientific computations. They are designed to handle datasets and examine them in a programmatical way. The software can process given jobs effectively and provide results in a requested form. However, nowadays' scientific calculations can involve hundreds of stages, each integrating several models and data sources created by various groups. Because of their complexity, they require a significant amount of resources to be processed. Such projects are well suited to a cloud environment since it allows for scalability in the event of increased resource demand. In these situations, system monitoring software is essential because it provides a better understanding of how resources are utilized when consecutive tasks are being executed. It can help to decrease the costs by choosing the best suitable provider or adjusting parts of the code for a faster execution time. Unfortunately, the built-in monitoring features offered by the SWMS developers and cloud providers deliver only high-level metrics, such as CPU per task, which is not always enough for a detailed resource usage analysis. Therefore the implementation of software allowing for monitoring on a system process level stays on the shoulders of the end users. 
+		The emergence of Scientific Workflow Management Systems (SWMS) allowed speeding up scientific progress in various fields. The main task of such systems is to represent and manage complex distributed scientific computations. They are designed to handle datasets and examine them in a programmatical way. The software can process given jobs effectively and provide results in a requested form. However, nowadays' scientific calculations can involve hundreds of stages, each integrating several models and data sources created by various research groups. Because of their complexity, they require a significant amount of computing resources to be processed. Such projects are well suited to a cloud environment since it allows for scalability in the event of increased resource demand. In these situations, system monitoring software is essential because it provides a better understanding of how resources are utilized when consecutive tasks are being executed. It can help to decrease the costs by choosing the best suitable provider or adjusting parts of the code for a faster execution time. Unfortunately, the built-in monitoring features offered by the SWMS developers and cloud providers deliver only high-level metrics, such as CPU usage per task, which is not always enough for a detailed resource usage analysis. Therefore the implementation of software allowing for monitoring on a system process level stays on the shoulders of the end users. 
 		
 		% TODO: state our solution and result
 		
@@ -54,13 +56,20 @@
 		Scientific Workflow Management Systems, Monitoring, eBPF
 	\end{IEEEkeywords}
 	
+	%%%%%%%%%%%%%%%%%%%%%%
+	% Introduction
+	%%%%%%%%%%%%%%%%%%%%%%
+	
 	\section{Introduction}
 	A scientific workflow management system (SWMS) is a commonly used software solution in the field of computational science. It can execute a series of calculations to examine (big) data sets in a structured and organized manner. Such computations are commonly called workflows consisting of tasks related to one another. The Management System is responsible for a transparent orchestration and execution of specified tasks, considering dependencies between them. The software allows for an efficient way to process and extract information from the examined data sets, leading to scientific advances in various fields such as biology, physics, and astronomy\cite{gil2007examiningchallengesscientific}. Yet, such workflows are often resource-intensive and require a distributed, dynamic, and scalable architecture to achieve meaningful results in a reasonable amount of time. The cloud and containerization paradigms offer several advantages when deploying these systems, such as accessibility, flexibility, and scalability \todo{source?}, which allow workflows to be deployed and executed dynamically. These characteristics are crucial, since a with a changing workflow during execution also comes different requirements regarding resources. This could for example depend on an input data set, the parallelism of computed tasks, and their level of complexity. The available resource pool can scale to adjust the computing resources throughout the workflow execution process. However, depending on the technological solutions offered by cloud services, hardware and software factors can vary significantly from one provider to another, which leads to different processing speeds, resource utilization, and error ratio\cite{aljamal2018comparativereviewhighperformance}. Built-in monitoring features provide information on the amount of time and resources needed for the computation of a particular task or resource utilization on the active virtual machines (containers). Unfortunately, for more intense calculations, like machine learning, data delivered by the built-in tools are often insufficient to provide enough information for deep analysis and detection of bottlenecks or finding opportunities for code optimization. In such scenarios, the more detailed (low-level) metrics available, the better conclusions can be drawn regarding the performance of the current solution. Producing exact information on the number of I/O operations, CPU load, or memory usage per system process allows for a more accurate analysis of executed workflows (or their tasks) and the infrastructure on which the calculations are performed. This would open doors for improving of the system architecture, hardware and code. However, the implementation of solutions capable of gathering such information or the extension of the already existing ones rests on the shoulders of the end users. This project intends to provide a solution allowing the collection of high- and low-level metrics, independently of underlying cloud technology and SWMS used for computational science. The following report is structured as follows \todo{}
 	
+	%%%%%%%%%%%%%%%%%%%%%%
+	% Related Work
+	%%%%%%%%%%%%%%%%%%%%%%
 	
 	\section{Related Work}
 	% TODO: previous research on SWMS, eBPF
-	Due to the nature of high volume data, modern science is often conducted on high-performance computing infrastructures. In recent years, the complexity of both the complexity of scientific experiments, as well as that of its underlying infrastructure has grown tremendously, reaching the point where it becomes challenging to execute the workflows in a reliable and error-free way. On the scale at which such projects are carried out it is almost certain that software or infrastructure anomalies will occur, which makes the detection and diagnosis of system failures more challenging than ever before. In order to address such issues, \citeauthor{valerio2008capturingworkflowevent} created a prototype system monitoring the following \todo{} properties at any time during and after the execution of the workflow. The premise of the design is to enable the user to answer the following questions:
+	Due to the nature of high volume data, modern science is often conducted on high-performance computing infrastructures. In recent years, the complexity of both scientific experiments, as well as that of its underlying infrastructure has grown tremendously, reaching the point where it becomes challenging to execute the workflows in a reliable and error-free way. On the scale at which such projects are carried out it is almost certain that software or infrastructure anomalies will occur, which makes the detection and diagnosis of system failures more challenging than ever before. In order to address such issues, \citeauthor{valerio2008capturingworkflowevent} created a prototype system monitoring the following \todo{} properties at any time during and after the execution of the workflow. The premise of the design is to enable the user to answer the following questions:
 	
 	\begin{itemize}
 		\item What is the status of the workflow?
@@ -71,34 +80,36 @@
 		\item How has each activity in the workflow performed (in the past)?
 	\end{itemize}
 	
-	The ability to answer the aforementioned questions can be guaranteed by a system monitoring the general properties of the workflow and its slightest details. Therefore, this type of solution usually consists of various components that collect data at different layers, starting from the general parameters of the workflow through the infrastructure on which it is run, ending with individual processes responsible for performing calculations. In addition, the software must be able to map the relevant processes (which can be executed in a parallel and distributed manner) to the following machines and tasks and publish them in a readable form. Of course, all this makes sense only if one can assign a chronological order of these processes concerning the time domain. Furthermore, an environment in which such scenarios are executed also plays an important role. Regardless of whether the code is invoked in the operating system context or a virtualized container created for the task, it is often characterized by restrictive standards. Such standards fulfill the functions of stability and security and thus may not provide any or only limited opportunities for adjustment. However, without it, it may not be possible to access system values available to the system's kernel. 
+	The ability to answer the aforementioned questions can be guaranteed by a system monitoring the general properties of the workflow and its slightest details. Therefore, this type of solution usually consists of various components that collect data at different layers, starting from the general parameters of the workflow through the infrastructure on which it is run, ending with individual processes responsible for performing calculations. In addition, the software must be able to map the relevant processes (which can be executed in a parallel and distributed manner) to the corresponding machines and tasks and publish them in a readable form. Of course, all this makes sense only if one can assign a chronological order of these processes concerning the time domain. Furthermore, an environment in which such scenarios are executed also plays an important role. Regardless of whether the code is invoked in the operating system context or a virtualized container created for the task, it is often characterized by restrictive standards. Such standards fulfill the functions of stability and security and thus may not provide any or only limited opportunities for adjustment. However, without it, it may not be possible to access system values available to the system's kernel. 
 	Fortunately, one does not have to develop everything from scratch as there are open technologies capable of solving a single or part of the listed conditions. \citeauthor{levin2020viperproberethinkingmicroservice} used Linux’s extended Berkeley Packet Filter (eBPF)\cite{ebpf} software for a collection of system metrics in the containerized environment and exposure of these to a specified endpoint. In a further step, he used Grafana\cite{grafana}, an observability framework, to present the collected information using programmable dashboards. This strategy allows the collection of data from various sources and then processing and presenting it in the form of histograms and graphs, as described by the user. It also reflects well the current trend for creating monitoring solutions. It is based on a combination of available platforms and software to collect and present data that are relevant to a carried-out project. For such approaches, it is not important what generates or where the data comes from, as long as it is published in a suitable format, which is most often JSON or some derivative of XML.
+	
+	%%%%%%%%%%%%%%%%%%%%%%
+	% Background
+	%%%%%%%%%%%%%%%%%%%%%%
 	
 	\section{Background}
 	% TODO: describe technologies we are using
-	% k8s
-	For the case of this project, the software is deployed to the Google Cloud Platform (GCP) \todo{ref} as a containerized cluster. Cloud technology ensures scalability, which is a must in the case of scientific workflows. During the execution of the pipeline, the number of resources needed for a smooth and timely execution can vary significantly. The resources provided by the cloud can scale together with the needs. In combination with container technology, one achieves a robust and scalable solution with access to a great pool of computational power. Kubernetes \todo{ref} is used for the orchestration of containerized workloads and services. It is an open-source platform, with a big community, decent documentation, and a great set of usage examples available online, became one of the most popular management tools for container environments.  
-	
 	% SWMS, Airflow
-	Today exists a vast number of workflow management systems, ranging form general purpose ones like Apache Airflow \cite{airflow}, Nextflow \cite{nextflow} or Pegasus \cite{pegasus} to domain specific ones e.g. Taverna \cite{taverna} for bio-informatics and astronomy, Arvados \cite{arvados} for biomedical data and many more. Each of these naturally have their advantages and disadvantages over another, due to their design and architecture and thus resulting in different stages of maturity.\\
-	We decided for Airflow, since it serves the general purpose, is widely used and one of the most mature SWMS. The workflow in Airflow is described in Directed Acyclic Graph (DAG), whose nodes consists of tasks that are executed. The edges represent the dependencies and therefore the execution order of these tasks. The description of the DAG is specified by the user in a Python script. Figure \ref{fig:aiflow:dag} shows DAG that runs tests in a Kubernetes environment \cite{airflowDag}.
-	\begin{figure}[h]
-		\includegraphics[width=\linewidth]{images/airflow-dag.png}
-		\caption{Airflow DAG with five tasks successfully run (dark green), one running (light green) and one in queue (gray).}
+	Today exists a vast number of workflow management systems, ranging form general purpose ones like Apache Airflow \cite{airflow}, Nextflow \cite{nextflow} or Pegasus \cite{pegasus} to domain specific ones e.g. Taverna \cite{taverna} for bio-informatics and astronomy, Arvados \cite{arvados} for biomedical data, and many more. Each of these naturally have their advantages and disadvantages over another, due to their design and architecture and thus resulting in different stages of maturity.\\
+	To begin with, we decided for Airflow, since it serves the general purpose, is widely used and one of the most mature SWMS \cite{harenslak2021data}. The workflow in Airflow is described with a Directed Acyclic Graph (DAG), whose nodes consists of tasks that are executed. The edges represent the dependencies and therefore the execution order of these tasks. The description of the DAG is specified by the user in a Python script. Figure \ref{fig:aiflow:dag} shows a DAG that runs tests in a Kubernetes environment \cite{airflowDag}.
+	\begin{figure*}[h]
+		\centering
+		\includegraphics[width=0.7\linewidth]{images/airflow-dag.png}
+		\caption{Airflow DAG with five tasks successfully run (dark green), one running (light green) and one in queue (gray). The execution order is defined by the connections between the individual tasks. After the \textit{start\_task} task is finished, the connected tasks can start in parallel. Afterwards, the task \textit{non\_root\_task} has to wait until \textit{other\_namespace\_task}, \textit{test\_sharedvolume\_mount} and \textit{test\_volume\_mount} has successfully finished before it can get executed.}
 		\label{fig:aiflow:dag}
-	\end{figure}
+	\end{figure*}
 	
-	As depicted in Figure \ref{fig:aiflow:arch}, the basic architecture of Airflow consists of the following components: the \textit{User Interface}, that is served by the \textit{Webserver}, is the entry point for the user, and not only feature-rich, but also easy to use. At the heart of Airflow resides the \textit{Scheduler}, ''which handles both triggering scheduled workflows, and submitting Tasks''\cite{airflowArchitecture}. It therefore requires access to a \textit{DAG Directory}, in order to makes use of one of the provided \textit{Executor}s \cite{airflowExecutor}, that handle these tasks. The actual execution of tasks is performed by one or more \textit{Workers}. Finally, a \textit{Metadata Database} is ''used by the scheduler, executor and webserver to store state''\cite{airflowArchitecture}.
+	As depicted in Figure \ref{fig:aiflow:arch}, the basic architecture of Airflow consists of the following components: the \textit{User Interface} (UI), that is served by the \textit{Webserver}, is the entry point for the user, and not only feature-rich, but also easy to use. At the heart of Airflow resides the \textit{Scheduler}, ''which handles both triggering scheduled workflows, and submitting Tasks''\cite{airflowArchitecture}. It therefore requires access to a \textit{DAG Directory}, in order to makes use of one of the provided \textit{Executor}s \cite{airflowExecutor}, that handle these tasks. The actual execution of tasks is performed by one or more \textit{Workers}. Finally, a \textit{Metadata Database} is ''used by the scheduler, executor and webserver to store state''\cite{airflowArchitecture}.
 	\begin{figure}[h]
 		\includegraphics[width=\linewidth]{images/airflow-architecture.png}
-		\caption{Airflow architecture \cite{airflowArchitecture}}
+		\caption{Airflow architecture}
 		\label{fig:aiflow:arch}
 	\end{figure}
 	
-	Airflow provides built-in logging and monitoring \cite{airflowMonitoring}, whose monitoring stack relies on StatsD \cite{statsd}, that gather the internal metrics and exposes them to Prometheus \cite{prometheus}. While the are numerous metrics on DAG and task level, none of them consider metrics on lower levels \cite{airflowMetrics}.
+	Airflow provides built-in logging and monitoring \cite{airflowMonitoring}, whose monitoring stack relies on StatsD \cite{statsd}, that gathers the internal metrics and exposes them to Prometheus. StatsD creates buckets and fills them with values for the specific metric, that will be aggregated after a predefined period and flushed to an endpoint for further processing. While the are numerous metrics on DAG and task level, none of them consider metrics on lower levels \cite{airflowMetrics}.
 	
 	% Monitoring, eBPF
-	With eBPF \cite{ebpf} however, it is possible to gather metrics directly from the Linux kernel. It extends the kernel without changing the kernel source code or loading kernel modules and has therefore unrestricted access to all hardware. These little programs get triggered by certain hook point (e.g. system calls, function entry/exit, network events) and can thus be attached to almost anywhere int kernel or user applications \cite{whatebpf}. 
+	With eBPF \cite{ebpf} however, it is possible to gather metrics directly from the Linux kernel. It extends the kernel without changing the kernel source code or loading kernel modules and has therefore unrestricted access to all hardware. These little programs get triggered by certain hook point (e.g. system calls, function entry/exit, network events) and can thus be attached to almost anywhere into kernel or user applications \cite{whatebpf}. eBPF programs are usually written using frameworks such as the BPF Compiler Collection (BCC) \cite{bcc}. BCC provides a library and ''Python, C\texttt{++}, and Lua interfaces for writing programs''\cite{cassagnes2020riseebpfnonintrusive} and many tools for efficient kernel tracing.
 	Figure \ref{fig:ebpf:steps} depicts the involved steps to attach an eBPF program: in order to use the program in the Linux kernel, it expects the program in the form of bytecode. With the \texttt{bpf} system call, the program will be loaded into kernel space, where it first has to be verified (that is actually safe to run) and secondly compiled to machine specific instructions. ''This makes eBPF programs run as efficiently as natively compiled kernel code or as code loaded as a kernel module'' \cite{whatebpf}.
 	\begin{figure}[h]
 		\includegraphics[width=\linewidth]{images/ebpf-steps.png}
@@ -108,99 +119,88 @@
 	In order to store collected information (e.g. in the form of metrics), eBPF leverages \textit{eBPF Maps} \cite{ebpfMaps}, that can be accessed not only from kernel, but also from user space.
 	
 	% Monitoring, Prometheus, Grafana
-	The data from these eBPF maps can be exported to a more powerful monitoring systems such as Prometheus \cite{prometheus}, Graphite or InfluxDB, and  visualized with an analytics platform like Grafana or Kibana.
+	The data from these eBPF maps can be exported to a more powerful monitoring systems such as Prometheus, Graphite or InfluxDB, and  visualized with an analytics platform like Grafana or Kibana.
 	
+	%%%%%%%%%%%%%%%%%%%%%%
+	% Approach
+	%%%%%%%%%%%%%%%%%%%%%%
 	
 	\section{Approach}
-	% TODO: how we implemented tech mentiones in background
+	% TODO: how we implemented tech mentioned in background
 	As mentioned in the previous section, we are going to build the monitoring solution on top of the Scientific Workflow Management System (SWMS) Apache Airflow. 
 	
-	\subsection{Architecture and Components of Apache Airflow}
-	
-	\begin{figure}[h]
-		\includegraphics[width=\linewidth]{images/arch-diag-logging.png}
-		\caption{Architecture of Apache Airflow extended Image}
-		\label{fig:airflow_arch_logging}
-	\end{figure}
-	
-	
-	Apache Airflow consists of an Webserver running a GUI, a Database, an Scheduler and Executor, a Directory for DAGs, a Logging Component, Monitoring Component and one or multiple workers.
-	
-	The webserver is the graphical user interface for starting, stopping and monitoring currently running or already runned tasks.
-	
-	The database is for storing the current results, information and states of the system, jobs and tasks.
-	
-	The Scheduler is for triggering the execution of tasks and deciding in which order they get executed.
-	
-	The Executor has different operation modes, but in general, its work is to get the scheduled tasks actually running on workers.
-	
-	The Worker is the encapsulation of an actually running tasks.
-	
-	The Logging is done by using FluentD for log handing.
-	
-	For Monitoring, StatsD is used as the metric collector in the system. \cite{statsd} 
-	It was originally developed by Etsy and works by creating buckets and filling them with values for the specific metric, after a predefined period the values will be aggregated and flushed to an endpoint for further handling. 
-	
-	
 	\subsection{Deployment of Apache Airflow}
-	Apache Airflow is a widely used and adopted SWMS and as such, there are many approaches for deployment. These include fully managed solutions like Google Cloud Composer, Amazon Managed Workflows for Apache Airflow and astronomer.io. Using such services comes with the advantage of an easy and fast deployment. The downside is, that you may lack some flexibility and access to more granular and in depth functionalities and access. An Apache Airflow deployed by such services can often just be treated as a black box system. This approach may block some needed functionalities and access to the raw resources required to collect metrics at the level of granularity we try to achieve.
+	Apache Airflow is a widely used and adopted SWMS and as such, there are many approaches for deployment. These include fully managed solutions like Google Cloud Composer, Amazon Managed Workflows for Apache Airflow and astronomer.io. Using such services comes with the advantage of an easy and fast deployment. The downside is, that you may lack some flexibility and access to more granular and in depth functionalities and access to all resources. An Airflow instance deployed by such services can often just be treated as a black box system. This approach may block some needed functionalities and access to the raw resources required to collect metrics at the level of granularity we try to achieve.
 	
-	On the other side of the Deployment complexity are the deployment strategies that involves deploying or sometimes even compiling the needed components yourself on bare-metal servers. For this, the database and logging systems have to be correctly installed before. At the same time, machines have to be configured to build a cluster and then Apache Airflow is installed and run on all the machines. This could also be combined by deploying Kubernetes in the first place, and then using Kubernetes orchestration technologies to run all the needed services in the cluster. This deployment strategy comes with the advantage of fine and granular access to all system resources, but the downside is the overhead of managing everything by yourself. 
+	On the other side of the deployment complexity are the deployment strategies that involves deploying or sometimes even compiling the needed components yourself on bare-metal servers. For this, the database and logging systems have to be correctly installed beforehand. At the same time, machines have to be configured to build a cluster and then Apache Airflow is installed and run on all the machines. This could also be combined by deploying Kubernetes in the first place, and then using Kubernetes orchestration technologies to run all the needed services in the cluster. This deployment strategy comes with the advantage of fine and granular access to all system resources, and the downside of the overhead when managing everything by oneself. 
 	
-	A deployment strategy is picked, that combines the two above. Google Cloud Platform (GCP) is used as the provider for the needed computation power provided by their different cloud services. GCP provides managed resources and guarantees an easy-to-use process of deploying the needed infrastructure. With the Google Kubernetes Engine (GKE) it even provides a managed Kubernetes deployment. Using this, the services no longer have to be installed on the individual machines, they can rather be just send to Kubernetes and then Kubernetes orchestrates the needed services and deploy them on the available infrastructure. At the same time, one has full access to all the underlying components, like the virtual machines Kubernetes and the Apache Airflow services running on. This combines the granular access to all resources, and the ease of using a managed service.
+	%On the other end of the deployment complexity spectrum are deployment strategies that involve deploying or even compiling the required components on bare-metal servers. This requires that the database and logging systems be properly installed beforehand. At the same time, machines must be configured to form a cluster, and Apache Airflow must be installed and run on all of them. This could also be combined by first deploying Kubernetes and then using Kubernetes orchestration technologies to run all of the necessary services in the cluster. This deployment strategy has the advantage of fine and granular access to all system resources, but the disadvantage of the overhead associated with managing everything oneself.
+	
+	A deployment strategy is picked, that combines the two above. Google Cloud Platform (GCP) is used as the provider for the needed computation power provided by their different cloud services. GCP provides managed resources and guarantees an easy-to-use process of deploying the needed infrastructure. With the Google Kubernetes Engine (GKE) it even provides a managed Kubernetes deployment. Using this, the services no longer have to be installed on the individual machines, they can rather be just send to Kubernetes, which then orchestrates the needed services and deploy them on the available infrastructure. At the same time, one has full access to all the underlying components, like the virtual machines Kubernetes and the Apache Airflow services running on. This combines the granular access to all resources, and the ease of using a managed service.
 	
 	GKE is configured to create three nodes of the type e2-standard-4 which consist of 4 vCPUs and 16 GB RAM. \cite{gcpMachineType}
 	For the deployment of Apache Airflow on top of Kubernetes the official Apache Airflow Helm Chart is used. \cite{airflowHelmChart} Using a Helm Chart is a good way to reduce further complexity by using a pre-defined, out of the box running, Apache Airflow configuration. 
 	
-	The original Helm Chart was altered in the following ways to deal with our requirements.
-	\subsubsection{Executor — \todo{we are missing a chapter that explains how apache airflow is build internally?}}
-	The Executor is the service, that takes the scheduled tasks and takes all needed steps to get them executed by the worker.
+	The original Helm Chart \cite{airflowHelmChart} was altered in the following ways to deal with our requirements.
+	\subsubsection{Executor}
 	
-	“An Airflow installation generally consists of [...] An executor, which handles running tasks. In the default Airflow installation, this runs everything inside the scheduler, but most production-suitable executors actually push task execution out to workers.”
-	“Airflow sends out Tasks to run on Workers as space becomes available, so there’s no guarantee all the tasks in your DAG will run on the same worker or the same machine.”
-	
-	
-	\begin{figure}[h]
-		\includegraphics[width=\linewidth]{images/arch-diag-kubernetes.png}
-		\caption{Kubernetes Executor image}
+	\begin{figure*}[h]
+		\centering
+		\includegraphics[width=0.9\linewidth]{images/arch-diag-kubernetes.png}
+		\caption{Overview of the architecture when using the Kubernetes Executor. Showing the services and possible interaction by a user. Every task is run on an newly created worker pod that is permanently destroyed when the job has finished. The graphic is lacking the metric and logging part of Airflow which is shown in \autoref{fig:aiflow:arch}. The graphic is from \cite{airflowExecutorKubernetes}}
 		\label{fig:airflow_arch_kubernetes}
-	\end{figure}
+	\end{figure*}
 	
+	There are different Apache Airflow Executors with different approaches on how to handle the execution of tasks. It would make sense to use the default Celery Executor or the Kubernetes Executor for this project. The Celery Executor is adding a queue to the deployment. On all available nodes, a worker will be deployed. The workers continuously fetch new jobs from the queue and execute them.  The Kubernetes Executor, on the other hand, is changing the behavior in the way, that each node does not have only one worker, but rather for each job there is one worker which is terminated when the job is finished. The huge advantage of the Kubernetes Executor is, that this executor is using the labeling capabilities of Kubernetes. The Kubernetes Executor is very communicative in the worker name and metadata, which makes it easy to collect all this information without accessing the machine. \cite{airflowExecutor}\cite{airflowExecutorKubernetes} The following data is attached to every worker pod when using the Kubernetes Executor:
+	\begin{itemize}
+		\item dag\_id, which is the name of the executed DAG. This name is not unique but helps with identifying the context.
+		\item run\_id, which is an timestamp and a unique id that is assigned when triggering the DAG.
+		\item task\_id, which is the name of the executed task in this worker pod. This name is also not unique but is an important information on what is currently running inside this pod for later analyses.
+	\end{itemize}
 	
-	There are multiple different Apache Airflow Executors with different approaches on how to handle the execution of tasks. We compared the default Celery Executor to the Kuberentes Executor:
-	
-	Celery Executor is adding a Queue to the deployment. On all available nodes, a worker will be deployed. The workers just endlessly fetching new jobs from the queue and working on them. 
-	
-	Kubernetes Executor is changing the behavior in the way, that no longer each node has one worker, but rather for each job there is one worker which is terminated when the job is finished.
-	
-	The huge advantage of the Kubernetes Executor is, that this executor is using the labeling capabilities of Kubernetes. The Kubernetes Executor is very communicative in the worker name and metadata, which makes it easy to collect all this information without accessing the machine.
+	With the help of these information we can reliably identify the current task, the containing DAG and the corresponding triggered run instance of the DAG. All these information are crucial for the further work. Without knowing whats inside the pods, a lot of valuable information would get lost. Luckily all these information are supplied simply by using the Kubernetes Executor. Alternative strategies would probably include writing own code to detect the running processes on the pods and then mapping them via the Airflow API to the corresponding DAG and run. Work in this direction was done in the beginning, but was eventually abandoned because of the advantages offered by the Kubernetes Exporter.
 	
 	\subsubsection{StatsD}
-	StatsD is the Logging and Metrics service used by Apache Airflow. To get the metrics compatible to Prometheus, a mapping is configured, so that the values can will be correctly interpreted by Prometheus.
+	StatsD is the monitoring service used by Apache Airflow. To get the metrics compatible to Prometheus, a mapping is configured so that the values can get interpreted correctly by Prometheus. The StatsD Exporter is shipped with the used official Helm Chart for Apache Airflow.
 	
 	\subsubsection{Webserver, Worker, Environment}
-	Here are just minor changes, so that the access to the web server can be easily done, the right amount of worker nodes get configured and some environment parameters are changed to deal with some encountered issues.
+	Here are just minor changes, so that the webserver can be accessed easily for executing test DAGs, Apache Airflow knows the exact number of nodes the executor can use, and the environment parameters are changed to enable the backend authentication mechanism for accessing the Apache Airflow API and deploying Apache Airflow with the sample DAGs for better demonstration. 
 	
 	\subsubsection{Prometheus and Grafana}
-	For the monitoring stack Prometheus and Grafana are used. To get them working, the following changes are done.
 	
-	Apache Airflows StatsD Exporter is added as a scraping target
-	Every Endpoint is scraped for ebpf values
+	For our monitoring stack, we rely on Prometheus and Grafana, which we had to adjust to our new needs:
 	
-	kube-state-metrics now send all Labels and Annotations from all pods in all namespaces and not stripping them away before sending them to Prometheus.
+	\begin{itemize}
+		\item Apache Airflows StatsD Exporter is added as a scraping target. Prometheus now collects every 15 seconds the mapped metrics collected by StatsD
+		\item Every Endpoint orchestrated by Kubernetes is scraped every 5 seconds to collect the values collected by the eBPF Exporter
+	\end{itemize}
 	
-	Because of the mapping already done via the StatsD exporter, the metrics are parsable and interpretable as normal Prometheus metrics.
+	The kube-state-metrics service is configured to send all labels and annotations from all pods in all namespaces and not stripping them away before sending them to Prometheus, which is the default behaviour and can lead to confusion.
 	
-	\subsection{eBPF}
-	The used eBPF exporter is a fork of the eBPF exporter by Cloudflare \cite{ebpfCloudflare} and is extended with a previously not accepted pull request that implements a sample for using eBPF with Kubernetes. \cite{ebpfPull75} Additionally, existing sample BPF code was added from the BPF Compiler Collection (BCC) samples. \cite{bcc}
-	The eBPF exporter is available on Docker Hub and is automatically pulled when a new node is created. It runs on every node in the Kubernetes Cluster. 
-	\todo{Problem Docker API expired because DockerD no longer supported in Kubernetes. (\url{https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/}) ContainerD is the replacement but the ContainerD API is terrible and not usable because the lack of documentation. We had to switch to Kubernetes API but then had to also deal with authentication mechanics because it was operating on the cluster, not on itself.}
+	Because of the mapping already done via the StatsD exporter, the metrics are parsable and interpretable as normal Prometheus metrics and can be used like normal metrics to create custom Grafana dashboards. A few possible examples of metrics and how to visualize them are demonstrated in \autoref{sec:results}.
 	
+	\subsection{eBPF Exporter}
+	Since we use Prometheus for metric gathering, we need an exporter that is able to publish the eBPF metrics. Developers at Cloudflare created an \textit{ebpf\_exporter} \cite{ebpfCloudflare} that does exactly this. However, we had to adjust the exporter \cite{ebpfExporterJulian}, so that we can retrieve the airflow labels DAG ID, Task ID and Run ID. For this a previously unaccepted pull request from the Cloudflare project was used as an example on how to use eBPF to get information form Kubernetes \cite{ebpfPull75}. This pull requests contain an example implementation for exporting the eBPF metrics using also information provided by Kubernetes about the containing node or pod. The implementation was used as a starting point, but had to be completely re implemented as they used the dockerd implementation and therefore the Docker API which is no longer supported in newer Kubernetes versions \cite{kubernetesDockerDepricated}. Because of the lack of documentation for the now used containerd API, the code was rewritten to use the Kubernetes API. This introduces new problems, because now one also has to deal with authentication mechanics as the Kubernetes API can manage the whole cluster and has no internal pod specific permissions for just getting information on ourselves. To tackle this, a cluster role binding with the needed permissions is used as suggested by \cite{kubernetesRbac}. With this changes finally the DAG ID, Task ID and Run ID where published by the eBPF exporter together with the selected metrics.
 	
-	To do all this automatically, an own Helm Chart is created with all the needed configurations. 
-	…
+	These parameters can be used to filter the results in Grafana.
+	
+	To make the deployment as easy as possible, we created a Helm chart using a Docker image, where one can supply a configmap with eBPF programs. Per default we provide five examples \cite{ebpfexporterexamples}:
+	\begin{itemize}
+		\item \textit{biolatency}~ traces the block device I/O (disk I/O), and records the distribution of I/O latency,
+		\item \textit{cachestat}~ records page cache accesses,
+		\item \textit{dcstat}~ exposes statistics on the Linux  directory  entry cache,
+		\item \textit{runqlat}~ monitors how long tasks spent waiting their turn to run on-CPU, and
+		\item \textit{syscalls}~ measures the latency of syscalls, including the entrypoint and audit logging.
+	\end{itemize}
+	
+	The configmap can be easily extendable with additional eBPF programs.
+	
+	%%%%%%%%%%%%%%%%%%%%%%
+	% Results
+	%%%%%%%%%%%%%%%%%%%%%%
 	
 	\section{Results}
+	\label{sec:results}
 	In the following we will show some results of our system, when we executed the DAG \textit{example\_complex } provided by Airflow \cite{exampleComplex} on three worker nodes. This workflow was executed around 11:36:30 and completed within 2:50 minutes.
 	
 	As we can see by the colors in Figure \ref{fig:results:runqlat:a}, there is increased activity between 11:37:00 and 11:39:00, with a peak (red square) where over 5700 CPU tasks had to wait between 8 µs and 16.00 µs before they could be processed by the CPU.
@@ -250,10 +250,12 @@
 	More than that, other SWMS should be supported to attract a wide range of users and developers. Making the metrics loosely coupled is a crucial step hereby.
 	Ultimately, a small benchmark suite would be very helpful to evaluate the overhead of the eBPF exporter on the overall system performance.
 	
+	%%%%%%%%%%%%%%%%%%%%%%
+	% Conclusion
+	%%%%%%%%%%%%%%%%%%%%%%
 	
 	\section{Conclusion}
-	\includegraphics[width=\linewidth]{images/placeholder.jpg}
-	\todo{remove placehodler}
+	\todo{}
 	
 	\section*{Acknowledgments}
 	We thank our supervisor Sören Becker for his enormous support and patience. 
