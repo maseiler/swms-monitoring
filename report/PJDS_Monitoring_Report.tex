@@ -45,11 +45,16 @@
 	\maketitle
 	
 	\begin{abstract}
-		
-		The emergence of Scientific Workflow Management Systems (SWMS) allowed speeding up scientific progress in various fields. The main task of such systems is to represent and manage complex distributed scientific computations. They are designed to handle datasets and examine them in a programmatical way. The software can process given jobs effectively and provide results in a requested form. However, nowadays' scientific calculations can involve hundreds of stages, each integrating several models and data sources created by various research groups. Because of their complexity, they require a significant amount of computing resources to be processed. Such projects are well suited to a cloud environment since it allows for scalability in the event of increased resource demand. In these situations, system monitoring software is essential because it provides a better understanding of how resources are utilized when consecutive tasks are being executed. It can help to decrease the costs by choosing the best suitable provider or adjusting parts of the code for a faster execution time. Unfortunately, the built-in monitoring features offered by the SWMS developers and cloud providers deliver only high-level metrics, such as CPU usage per task, which is not always enough for a detailed resource usage analysis. Therefore the implementation of software allowing for monitoring on a system process level stays on the shoulders of the end users. 
-		
-		% TODO: state our solution and result
-		
+		% background
+		~Due to the data characteristics of scientific experiments, Scientific Workflow Management Systems (SWMS) emerged to process massive amounts of data in parallel data pipelines. While SWMS became more powerful, the complexity of the system and its possible workflows increased, which requires to closely monitor the activity within the system.
+		% problem
+		While today's SWMS expose built-in metrics regarding their workflow and tasks, none of them is able to gather information about low-level metrics from the operating system or hardware. 
+		% solution
+		We propose a microservice oriented solution to monitor events from the Linux kernel using eBPF. 
+		% result
+		Our system demonstrates that it is possible to enrich monitoring with a wide range of metrics, such as cache statistics, task waiting time, system calls and much more.
+		% significance
+		We imagine such low-level metrics to be extremely helpful for developers and administrators, in order to identify possible bottlenecks and bugs in SWMS pipelines. 		
 	\end{abstract}
 	
 	\begin{IEEEkeywords}
