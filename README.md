@@ -12,7 +12,7 @@
     Gain more insight in your scientific workflow management system and optimize workflow execution while minimizing costs.
     <br />
     <br />
-    <a href="https://github.com/maseiler/swms-monitoring/report/final.pdf"><strong>Explore the project report for more detailed information »</strong></a>
+    <a href="https://github.com/maseiler/swms-monitoring/report/PJDS_Monitoring_Report.pdf"><strong>Explore the project report for more detailed information »</strong></a>
     <br />
     <br />
     <a href="https://youtu.be/KWP9V8J-R5Y">View Demo »</a>
